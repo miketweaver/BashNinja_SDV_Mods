@@ -29,7 +29,7 @@ namespace MapPatcher
             this.PatchMap(Game1.getLocationFromName("Greenhouse"), greenhouse, "untitled tile sheet", 64, 64);
         }
 
-        /// <summary>Initialise the mod.</summary>
+        /// <summary>Patch a map into a GameLocation.</summary>
         /// <param name="farmLocation">The Location to patch.</param>
         /// <param name="map">The Map to patch in.</param>
         /// <param name="givenTileSheet">The tilesheet to use for drawing.</param>
