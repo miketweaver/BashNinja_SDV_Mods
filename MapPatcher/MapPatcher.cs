@@ -29,13 +29,13 @@ namespace MapPatcher
             this.PatchMap(Game1.getLocationFromName("Greenhouse"), greenhouse, "untitled tile sheet", 64, 64);
         }
 
-		/// <summary>Initialise the mod.</summary>
-		/// <param name="farmLocation">The Location to patch.</param>
-		/// <param name="map">The Map to patch in.</param>
-		/// <param name="givenTileSheet">The tilesheet to use for drawing.</param>
-		/// <param name="xLocation">The X location to start patching at. Left most location.</param>
-		/// <param name="yLocation">The X location to start patching at. Top most location.</param>
-		public void PatchMap(GameLocation farmLocation, Map map, string givenTileSheet, int xLocation, int yLocation)
+        /// <summary>Initialise the mod.</summary>
+        /// <param name="farmLocation">The Location to patch.</param>
+        /// <param name="map">The Map to patch in.</param>
+        /// <param name="givenTileSheet">The tilesheet to use for drawing.</param>
+        /// <param name="xLocation">The X location to start patching at. Left most location.</param>
+        /// <param name="yLocation">The X location to start patching at. Top most location.</param>
+        public void PatchMap(GameLocation farmLocation, Map map, string givenTileSheet, int xLocation, int yLocation)
         {
             TileSheet tilesheet = farmLocation.map.GetTileSheet(givenTileSheet);
 
