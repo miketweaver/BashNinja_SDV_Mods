@@ -203,7 +203,12 @@ namespace Stardewponics
             if (carpenter == null)
             {
                 GameEvents.UpdateTick -= MenuForceOurBuildingRendering;
-                return;
+				Building[] greenhouses = this.GetGreenhouses(this.Farm).ToArray();
+
+                foreach (Building greenhouse in greenhouses)
+                    if (greenhouse.daysOfConstructionLeft == 2)
+                        greenhouse.daysOfConstructionLeft = 3;
+				return;
             }
 
             var currBuildingField = Helper.Reflection.GetPrivateField<Building>(carpenter, "currentBuilding");
@@ -224,8 +229,6 @@ namespace Stardewponics
                 List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(Game1.activeClickableMenu, "blueprints");
                 blueprints.Add(CreateGreenhouse());
             }
-
-
         }
 
         private BluePrint CreateGreenhouse()
