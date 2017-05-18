@@ -54,22 +54,22 @@ namespace Stardewponics
         }
 
 
-		/*********
+        /*********
 		** Private methods
 		*********/
-		/// <summary>The method invoked when the player presses a keyboard button.</summary>
-		/// <param name="sender">The event sender.</param>
-		/// <param name="e">The event data.</param>
+        /// <summary>The method invoked when the player presses a keyboard button.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event data.</param>
 
-//		private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
-		private void LocationEvents_CurrentLocationChanged(object sender, EventArgs eventArgs)
+        //		private void LocationEvents_CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e)
+        private void LocationEvents_CurrentLocationChanged(object sender, EventArgs eventArgs)
         {
 
-			// spawn tractor house & tractor
-			//			if (this.IsNewDay && e.NewLocation == this.Farm)
-			if (this.IsNewDay)
+            // spawn tractor house & tractor
+            //			if (this.IsNewDay && e.NewLocation == this.Farm)
+            if (this.IsNewDay)
 
-			{
+            {
                 this.RestoreCustomData();
                 this.IsNewDay = false;
             }
@@ -117,24 +117,42 @@ namespace Stardewponics
                     buildingType = this.GarageBuildingType,
                     daysOfConstructionLeft = building.DaysOfConstructionLeft
                 }; // rebuild to avoid data issues
-                Monitor.Log("building " + newGarage.tileX.ToString() );
+                Monitor.Log("building " + newGarage.tileX.ToString());
                 this.Farm.buildings.Add(newGarage);
 
+                if (newGarage.daysOfConstructionLeft > 0)
+                {
 
-				if (this.Farm.isThereABuildingUnderConstruction() && this.Farm.getBuildingUnderConstruction().daysOfConstructionLeft > 0 && Game1.getCharacterFromName("Robin", false).currentLocation.Equals((object)this))
-				{
-					Building underConstruction = this.Farm.getBuildingUnderConstruction();
-					this.Farm.temporarySprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(399, 262, underConstruction.daysOfConstructionLeft == 1 ? 29 : 9, 43), new Vector2((float)(underConstruction.tileX + underConstruction.tilesWide / 2), (float)(underConstruction.tileY + underConstruction.tilesHigh / 2)) * (float)Game1.tileSize + new Vector2((float)(-Game1.tileSize / 4), (float)(-Game1.tileSize * 2 - Game1.tileSize / 4)), false, 0.0f, Color.White)
-					{
-						scale = (float)Game1.pixelZoom,
-						interval = 999999f,
-						animationLength = 1,
-						totalNumberOfLoops = 99999,
-						layerDepth = (float)((double)((underConstruction.tileY + underConstruction.tilesHigh / 2) * Game1.tileSize + Game1.tileSize / 2) / 10000.0)
-					});
-				}
+                    NPC robin = Game1.getCharacterFromName("Robin");
+                    robin.ignoreMultiplayerUpdates = true;
+                    robin.sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>()
+                {
+                    new FarmerSprite.AnimationFrame(24, 75),
+                    new FarmerSprite.AnimationFrame(25, 75),
+                    new FarmerSprite.AnimationFrame(26, 300, false, false, new AnimatedSprite.endOfAnimationBehavior(farmer => this.Helper.Reflection.GetPrivateMethod(robin,"robinHammerSound").Invoke(farmer)), false),
+                    new FarmerSprite.AnimationFrame(27, 1000, false, false, new AnimatedSprite.endOfAnimationBehavior(farmer => this.Helper.Reflection.GetPrivateMethod(robin,"robinVariablePause").Invoke(farmer)), false)
+                   });
+                    robin.ignoreScheduleToday = true;
 
-                //this.Farm.buildStructure(newGarage, building.Tile, false, Game1.player);
+                    Building underConstruction = Game1.getFarm().getBuildingUnderConstruction();
+
+                    Game1.warpCharacter(robin, "Farm", new Vector2((float)(underConstruction.tileX + underConstruction.tilesWide / 2), (float)(underConstruction.tileY + underConstruction.tilesHigh / 2)), false, false);
+                    robin.position.X += (float)(Game1.tileSize / 4);
+                    robin.position.Y -= (float)(Game1.tileSize / 2);
+
+
+                    this.Farm.temporarySprites.Add(new TemporaryAnimatedSprite(Game1.mouseCursors, new Microsoft.Xna.Framework.Rectangle(399, 262, underConstruction.daysOfConstructionLeft == 1 ? 29 : 9, 43), new Vector2((float)(underConstruction.tileX + underConstruction.tilesWide / 2), (float)(underConstruction.tileY + underConstruction.tilesHigh / 2)) * (float)Game1.tileSize + new Vector2((float)(-Game1.tileSize / 4), (float)(-Game1.tileSize * 2 - Game1.tileSize / 4)), false, 0.0f, Color.White)
+                    {
+                        scale = (float)Game1.pixelZoom,
+                        interval = 999999f,
+                        animationLength = 1,
+                        totalNumberOfLoops = 99999,
+                        layerDepth = (float)((double)((underConstruction.tileY + underConstruction.tilesHigh / 2) * Game1.tileSize + Game1.tileSize / 2) / 10000.0)
+                    });
+
+                }
+                else
+                    this.Farm.buildStructure(newGarage, building.Tile, false, Game1.player);
                 //if (this.IsNewTractor)
                 //	this.SpawnTractor();
             }
@@ -194,7 +212,7 @@ namespace Stardewponics
         {
             this.IsNewDay = true;
             this.Farm = Game1.getFarm();
-			this.RestoreCustomData();
+            this.RestoreCustomData();
         }
 
         private void MenuForceOurBuildingRendering(object sender, EventArgs eventArgs)
@@ -203,12 +221,12 @@ namespace Stardewponics
             if (carpenter == null)
             {
                 GameEvents.UpdateTick -= MenuForceOurBuildingRendering;
-				Building[] greenhouses = this.GetGreenhouses(this.Farm).ToArray();
+                Building[] greenhouses = this.GetGreenhouses(this.Farm).ToArray();
 
                 foreach (Building greenhouse in greenhouses)
                     if (greenhouse.daysOfConstructionLeft == 2)
                         greenhouse.daysOfConstructionLeft = 3;
-				return;
+                return;
             }
 
             var currBuildingField = Helper.Reflection.GetPrivateField<Building>(carpenter, "currentBuilding");
