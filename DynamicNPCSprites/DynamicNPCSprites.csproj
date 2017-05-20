@@ -37,6 +37,12 @@
   <ItemGroup>
     <None Include="manifest.json" />
     <None Include="packages.config" />
+    <None Include="LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 <Target Name="AfterBuild">
