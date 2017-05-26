@@ -28,13 +28,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="CustomElementHandler">
+      <HintPath>..\..\Stardew-Valley-Mods\CustomElementHandler\bin\Debug\CustomElementHandler.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Stardewponics.cs" />
-    <Compile Include="Greenhouse.cs" />
-    <Compile Include="CustomSavaData.cs" />
-    <Compile Include="CustomSaveBuilding.cs" />
+    <Compile Include="Aquaponics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

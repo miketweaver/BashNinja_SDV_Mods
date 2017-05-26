@@ -5,56 +5,61 @@ using StardewValley;
 using StardewModdingAPI;
 using StardewValley.Buildings;
 using StardewValley.Menus;
+using CustomElementHandler;
+using StardewValley.Locations;
+using System.Collections.Generic;
 
 namespace Stardewponics
 {
-    public class Greenhouse : Building
+    public class Aquaponics : Building, ISaveElement
     {
+        /*********
+        ** Properties
+        *********/
+        private GameLocation location;
+        static int DaysToBuild = 4;
+        private Vector2 ghLocation;
+
+
 		/*********
 		** Public methods
 		*********/
-
-        public Greenhouse(BluePrint blueprint, Vector2 tileLocation)
+        public Aquaponics() : base()
         {
-            //buildingType = (int)
-            //humanDoor = new Point(-1, -1);
-            //animalDoor = new Point(-2, -1);
-            //indoors = null;
-            //nameOfIndoors = "";
-            //baseNameOfIndoors = "";
-            //nameOfIndoorsWithoutUnique = "";
-            //magical = false;
-            //tileX = 0;
-            //tileY = 0;
-            //maxOccupants = 0;
-            //tilesWide = 14;
-            //tilesHigh = 7;
-            //this.texture = content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
-            //daysOfConstructionLeft = 1;
-            //leftShadow = new Rectangle(656, 394, 16, 16); //656, 394, 16, 16
-
-			this.tileX = (int)tileLocation.X;
-			this.tileY = (int)tileLocation.Y;
-			this.tilesWide = blueprint.tilesWidth;
-			this.tilesHigh = blueprint.tilesHeight;
-			this.buildingType = blueprint.name;
-			this.texture = blueprint.texture;
-			this.humanDoor = blueprint.humanDoor;
-			this.animalDoor = blueprint.animalDoor;
-			this.nameOfIndoors = blueprint.mapToWarpTo;
-			this.baseNameOfIndoors = this.nameOfIndoors;
-			this.nameOfIndoorsWithoutUnique = this.baseNameOfIndoors;
-			this.indoors = this.getIndoors();
-			this.nameOfIndoors = this.nameOfIndoors + (object)(this.tileX * 2000 + this.tileY);
-			this.maxOccupants = blueprint.maxOccupants;
-			this.daysOfConstructionLeft = 4;
-			this.magical = blueprint.magical;
+            
         }
 
-        public Greenhouse SetDaysOfConstructionLeft(int input)
+        public Aquaponics(Vector2 coords, BuildableGameLocation location) : base ()
         {
-            daysOfConstructionLeft = input;
-            return this;
+            build(coords,location,DaysToBuild);
+
+            if(coords != Vector2.Zero)
+            {
+                ghLocation = new Vector2(45, 45);
+                //Routine's Code:
+				//AquaponicsLocation apl = new AquaponicsLocation(AquaponicsMod.helper.Content.Load<Map>(@"assets\greenhouseMap.xnb", ContentSource.ModFolder), nameOfIndoors, (BuildableGameLocation)location);
+				//indoors = apl;
+            }
+        }
+
+        private void build(Vector2 coords, BuildableGameLocation loc, int days)
+        {
+            this.location = loc;
+            tileX = (int)coords.X;
+            tileY = (int)coords.Y;
+            tilesWide = 14;
+            tilesHigh = 7;
+            humanDoor = new Point(-1, -1);
+            animalDoor = new Point(-1, -1);
+            texture = StardewponicsMod.helper.Content.Load<Texture2D>(@"assets\greenhouse.xnb", ContentSource.ModFolder);
+            buildingType = "Aquaponics";
+            baseNameOfIndoors = "Greenhouse";
+            nameOfIndoorsWithoutUnique = baseNameOfIndoors;
+            nameOfIndoors = baseNameOfIndoors;
+            maxOccupants = -1;
+            magical = false;
+            daysOfConstructionLeft = days;
+            owner = Game1.player.uniqueMultiplayerID;
         }
 
         public override bool intersects(Rectangle boundingBox)
@@ -100,20 +105,41 @@ namespace Stardewponics
 			b.Draw(Game1.mouseCursors, position + new Vector2((float)((this.tilesWide - 1) * Game1.tileSize), 0.0f), new Rectangle?(Building.rightShadow), Color.White * (localX == -1 ? this.alpha : 1f), 0.0f, Vector2.Zero, (float)Game1.pixelZoom, SpriteEffects.None, 1E-05f);
 		}
 
-        public override void dayUpdate(int dayOfMonth)
-        {
-            base.dayUpdate(dayOfMonth);
-            if (this.daysOfConstructionLeft > 0)
-                return;
-            //this.grabHorse();
-            //do special action for this building here
-            /*
-			 */
-        }
+		public Dictionary<string, string> getAdditionalSaveData()
+		{
+			Dictionary<string, string> savedata = new Dictionary<string, string>();
+			savedata.Add("name", buildingType);
+			savedata.Add("location", location.name);
+            savedata.Add("ghlocationx", ghLocation.X.ToString());
+            savedata.Add("ghlocationy", ghLocation.Y.ToString());
+			return savedata;
+		}
 
-        public override Rectangle getSourceRectForMenu()
-        {
-            return new Rectangle(0, 0, this.texture.Bounds.Width - 1, this.texture.Bounds.Height);
-        }
+		public object getReplacement()
+		{
+			Building building = new Building(new BluePrint("Shed"), new Vector2(tileX, tileY));
+			building.daysOfConstructionLeft = daysOfConstructionLeft;
+			building.tilesHigh = tilesHigh;
+			building.tilesWide = tilesWide;
+			building.indoors = indoors;
+			building.tileX = tileX;
+			building.tileY = tileY;
+			return building;
+		}
+
+		public void rebuild(Dictionary<string, string> additionalSaveData, object replacement)
+		{
+			Building building = (Building)replacement;
+			indoors = building.indoors;
+			Vector2 p = new Vector2(building.tileX, building.tileY);
+			BuildableGameLocation l = (BuildableGameLocation)Game1.getLocationFromName(additionalSaveData["location"]);
+			build(p, l, building.daysOfConstructionLeft);
+		}
+
+
+        //public override Rectangle getSourceRectForMenu()
+        //{
+        //    return new Rectangle(0, 0, this.texture.Bounds.Width - 1, this.texture.Bounds.Height);
+        //}
     }
 }

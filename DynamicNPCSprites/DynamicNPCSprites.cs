@@ -7,6 +7,7 @@ using StardewValley;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using System.IO;
+using StardewValley.Characters;
 
 namespace DynamicNPCSprites
 {
@@ -156,7 +157,7 @@ namespace DynamicNPCSprites
                     {
                         Texture2D source = Helper.Content.Load<Texture2D>(model[choice].Portrait, ContentSource.ModFolder);
 
-                        if (npc.GetType().Name == "Cat" || npc.GetType().Name == "Dog")
+                        if (npc is Pet)
                         {
                             Monitor.Log("NPC is a " + npc.GetType().Name, LogLevel.Trace);
 
