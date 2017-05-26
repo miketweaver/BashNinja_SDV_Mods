@@ -23,20 +23,20 @@ namespace Stardewponics
         public override void Entry(IModHelper help)
         {
             helper = help;
-			SaveEvents.AfterLoad += SaveEvents_AfterLoad;
-			SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
+            SaveEvents.AfterLoad += SaveEvents_AfterLoad;
+            SaveEvents.AfterReturnToTitle += SaveEvents_AfterReturnToTitle;
 
         }
 
-		private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
-		{
-			MenuEvents.MenuChanged -= MenuEvents_MenuChanged;
-		}
+        private void SaveEvents_AfterReturnToTitle(object sender, EventArgs e)
+        {
+            MenuEvents.MenuChanged -= MenuEvents_MenuChanged;
+        }
 
-		private void SaveEvents_AfterLoad(object sender, EventArgs e)
-		{
-			MenuEvents.MenuChanged += MenuEvents_MenuChanged;
-		}
+        private void SaveEvents_AfterLoad(object sender, EventArgs e)
+        {
+            MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+        }
 
         private void MenuEvents_MenuChanged(object sender, EventArgsClickableMenuChanged e)
         {
@@ -46,39 +46,39 @@ namespace Stardewponics
                 MenuEvents.MenuClosed += MenuEvents_MenuClosed;
                 List<BluePrint> blueprints = this.Helper.Reflection.GetPrivateValue<List<BluePrint>>(robinMenu, "blueprints");
                 blueprints.Add(CreateAquaponics());
-				GameEvents.UpdateTick += GameEvents_UpdateTick;
+                GameEvents.UpdateTick += GameEvents_UpdateTick;
             }
         }
 
-		private void GameEvents_UpdateTick(object sender, EventArgs e)
-		{
-			if (Game1.activeClickableMenu is CarpenterMenu carpenter)
-			{
-				if (carpenter.CurrentBlueprint.name == "Aquaponics")
-				{
-					IPrivateField<Building> cBuilding = Helper.Reflection.GetPrivateField<Building>(carpenter, "currentBuilding");
+        private void GameEvents_UpdateTick(object sender, EventArgs e)
+        {
+            if (Game1.activeClickableMenu is CarpenterMenu carpenter)
+            {
+                if (carpenter.CurrentBlueprint.name == "Aquaponics")
+                {
+                    IPrivateField<Building> cBuilding = Helper.Reflection.GetPrivateField<Building>(carpenter, "currentBuilding");
 
-					if (!(cBuilding.GetValue() is Aquaponics))
-					{
-						cBuilding.SetValue(new Aquaponics(Vector2.Zero, Game1.getFarm()));
-					}
-				}
-			}
-		}
+                    if (!(cBuilding.GetValue() is Aquaponics))
+                    {
+                        cBuilding.SetValue(new Aquaponics(Vector2.Zero, Game1.getFarm()));
+                    }
+                }
+            }
+        }
 
-		private void MenuEvents_MenuClosed(object sender, EventArgsClickableMenuClosed e)
-		{
-			GameEvents.UpdateTick -= GameEvents_UpdateTick;
-			MenuEvents.MenuClosed -= MenuEvents_MenuClosed;
-			Farm farm = Game1.getFarm();
-			for (int i = 0; i < farm.buildings.Count; i++)
-			{
-				if (farm.buildings[i] is Building b && !(b is Aquaponics) && b.buildingType == "Aquaponics")
-				{
-					farm.buildings[i] = new Aquaponics(new Vector2(b.tileX, b.tileY), farm);
-				}
-			}
-		}
+        private void MenuEvents_MenuClosed(object sender, EventArgsClickableMenuClosed e)
+        {
+            GameEvents.UpdateTick -= GameEvents_UpdateTick;
+            MenuEvents.MenuClosed -= MenuEvents_MenuClosed;
+            Farm farm = Game1.getFarm();
+            for (int i = 0; i < farm.buildings.Count; i++)
+            {
+                if (farm.buildings[i] is Building b && !(b is Aquaponics) && b.buildingType == "Aquaponics")
+                {
+                    farm.buildings[i] = new Aquaponics(new Vector2(b.tileX, b.tileY), farm);
+                }
+            }
+        }
 
         private BluePrint CreateAquaponics()
         {
